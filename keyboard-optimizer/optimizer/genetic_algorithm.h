@@ -3,15 +3,12 @@
 #include <vector>
 
 namespace ga {
-  struct ConstGAParam {
+  struct ConstParam {
     static const int POPULATION_SIZE;
     static const int GENERATION_MAX;
-    static const int CROSS_RATE;
-    static const int MUTATION_RATE;
-    static const int TOURNAMENT_SIZE;
+    static const double CROSS_RATE;
+    static const double MUTATION_RATE;
   };
-
-  using Population = std::vector<Individual>;
 
   class Individual {
     std::string _layout;
@@ -19,14 +16,15 @@ namespace ga {
 
   public:
     const std::string& layout() const;
-    std::string layout(const std::string& _layout);
+    void layout(const std::string& _layout);
 
     double fitness() const;
 
     Individual();
     Individual(const Individual& rhs);
-    double calcFitness();
   };
+
+  using Population = std::vector<Individual>;
 
   class Generation {
     Population population;
@@ -35,8 +33,4 @@ namespace ga {
     Generation();
     Generation& nextGeneration();
   };
-
-  Individual& selection(Population& x);
-  void crossover(Individual& a, Individual& b);
-  void mutation(Population& x);
 }
