@@ -140,3 +140,11 @@ void Generation::nextGeneration() {
 
   this->population = next_population;
 }
+
+Individual Generation::getElite() const {
+  auto min = [](auto lhs, auto rhs) {
+    return lhs.fitness() > rhs.fitness();
+  };
+  auto x = std::min_element(std::begin(population), std::end(population), min);
+  return *x;
+}

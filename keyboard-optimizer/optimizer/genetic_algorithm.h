@@ -33,5 +33,6 @@ namespace ga {
   public:
     Generation();
     void nextGeneration();
+    Individual getElite() const;
   };
 }
