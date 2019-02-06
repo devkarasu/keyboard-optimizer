@@ -1,9 +1,21 @@
 #include <iostream>
+#include <sstream>
 #include "genetic_algorithm.h"
 
 void printKeys(const ga::Individual& x) {
   std::cout << "fitness:" << x.fitness() << std::endl;
-  std::cout << x.layout() << std::endl;
+
+  std::istringstream s(x.layout());
+
+  std::cout << "| ";
+  for (int i = 0; i < 10; i++) 
+    std::cout << (char)s.get() << " | ";
+  std::cout << "\n| ";
+  for (int i = 0; i < 9; i++) 
+    std::cout << (char)s.get() << " | ";
+  std::cout << "\n| ";
+  for(int i = 0; i < 7; i++)
+    std::cout << (char)s.get() << " | ";
   return;
 }
 

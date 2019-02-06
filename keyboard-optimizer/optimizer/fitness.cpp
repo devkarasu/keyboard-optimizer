@@ -1,5 +1,6 @@
 #include "genetic_algorithm.h"
 #include <fstream>
+#include <iostream>
 using namespace ga;
 
 /* Layout Indexes
@@ -17,16 +18,21 @@ int scores[] = {
 double Individual::calcFitness() {
   std::ifstream samples("sample.txt");
 
+  if (!samples) {
+    std::cout << "i can't read sample texts\n";
+    _fitness = 777;
+    return _fitness;
+  }
+
   char chr;
   int sum_score = 0;
   while (samples.get(chr)) {
-    if (!('a' <= chr && chr <= 'z')) {
-      continue;
-    }
-
     // Scores of key position
     auto i = _layout.find(chr);
-    sum_score += 7 - scores[i];
+    if (i != std::string::npos)
+      sum_score += 7 - scores[i];
+    else
+      std::cout << "???\n";
   }
 
   _fitness = 1.0 * sum_score;
