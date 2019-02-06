@@ -139,11 +139,7 @@ void Generation::nextGeneration() {
 
   mutation(next_population);
 
-  auto min = [](auto lhs, auto rhs) {
-    return lhs.fitness() > rhs.fitness();
-  };
-  auto x = std::min_element(std::begin(population), std::end(population), min);
-  next_population.push_back(*x);
+  next_population.push_back(getElite());
 
   this->population = next_population;
 }
