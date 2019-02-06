@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="fitness.cpp" />
     <ClCompile Include="genetic_algorithm.cpp" />
     <ClCompile Include="optimizer.cpp" />
   </ItemGroup>

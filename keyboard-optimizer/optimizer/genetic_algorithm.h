@@ -15,9 +15,10 @@ namespace ga {
     double _fitness;
 
   public:
-    const std::string& layout() const;
+    std::string layout() const;
     void layout(const std::string& _layout);
 
+    double calcFitness();
     double fitness() const;
 
     Individual();
@@ -31,6 +32,6 @@ namespace ga {
 
   public:
     Generation();
-    Generation& nextGeneration();
+    void nextGeneration();
   };
 }
