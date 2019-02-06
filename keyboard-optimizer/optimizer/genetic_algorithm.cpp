@@ -15,7 +15,15 @@ const int LEN = 25;
 
 std::random_device rnd;
 std::mt19937_64 mt(rnd());
-std::uniform_real_distribution<> percentage(0.0, 100.0);
+std::uniform_real_distribution<> rdist(0.0, 1.0);
+
+double percentage() {
+  return rdist(mt) * 100.0;
+}
+
+double roulette(double max) {
+  return rdist(mt) * max;
+}
 
 std::string Individual::layout() const{
   return _layout;
@@ -54,9 +62,8 @@ Individual selection(const Population& x) {
     [](double lhs, const Population::value_type& rhs) { return lhs + 200 - rhs.fitness(); }
   );
 
-  std::uniform_real_distribution<> roulette(0, roulette_max);
 
-  double dart = roulette(mt);
+  double dart = roulette(roulette_max);
   double sum = 0.0;
   int i;
   for (i = 0; dart > sum && i < x.size(); i++) {
@@ -96,7 +103,7 @@ void crossover(Individual& a, Individual& b) {
 void mutation(Population& p) {
   std::uniform_int_distribution<> randomIndex(0, LEN);
   for (int i = 0; i < p.size(); i++) {
-    if (percentage(mt) > ConstParam::MUTATION_RATE) {
+    if (percentage() > ConstParam::MUTATION_RATE) {
       continue;
     }
 
