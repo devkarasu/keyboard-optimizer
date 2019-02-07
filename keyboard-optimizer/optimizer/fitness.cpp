@@ -10,9 +10,9 @@ using namespace ga;
 */
 
 int scores[] = {
-    1, 3, 4, 3, 1, 1, 3, 4, 3, 1,
-    5, 6, 6, 6, 2, 2, 6, 6, 6,
-    1, 2, 2, 3, 1, 1, 3
+    6, 4, 3, 4, 6, 6, 4, 3, 4, 6,
+    2, 1, 1, 1, 5, 5, 1, 1, 1,
+    6, 5, 5, 4, 6, 6, 4
 };
 
 double Individual::calcFitness() {
@@ -25,16 +25,16 @@ double Individual::calcFitness() {
   }
 
   char chr;
-  int sum_score = 0;
+  int score_pos = 0;
   while (samples.get(chr)) {
     // Scores of key position
     auto i = _layout.find(chr);
     if (i != std::string::npos)
-      sum_score += 7 - scores[i];
+      score_pos += scores[i];
     else
       std::cout << "???\n";
   }
 
-  _fitness = 1.0 * sum_score;
+  _fitness = 100 / 7000.0 * score_pos;
   return _fitness;
 }

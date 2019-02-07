@@ -7,14 +7,16 @@
 using namespace ga;
 
 const int ConstParam::POPULATION_SIZE = 100;
-const int ConstParam::GENERATION_MAX = 1000;
+const int ConstParam::GENERATION_MAX = 100000;
 const double ConstParam::CROSS_RATE = 95;
 const double ConstParam::MUTATION_RATE = 0.5;
 
+std::random_device rnd;
+const long long ConstParam::RANDOM_SEED = rnd();
+
 const int LEN = 25;
 
-std::random_device rnd;
-std::mt19937_64 mt(rnd());
+std::mt19937_64 mt(ConstParam::RANDOM_SEED);
 std::uniform_real_distribution<> rdist(0.0, 1.0);
 
 double percentage() {
@@ -59,15 +61,14 @@ Generation::Generation() {
 
 Individual selection(const Population& x) {
   double roulette_max = std::accumulate(std::begin(x), std::end(x), 0.0,
-    [](double lhs, const Population::value_type& rhs) { return lhs + 200 - rhs.fitness(); }
+    [](double lhs, const Population::value_type& rhs) { return lhs + 120 - rhs.fitness(); }
   );
-
 
   double dart = roulette(roulette_max);
   double sum = 0.0;
   int i;
   for (i = 0; dart > sum && i < x.size(); i++) {
-    sum = 200 - x[i].fitness() + sum;
+    sum = 120 - x[i].fitness() + sum;
   }
 
   return x[i - 1];
@@ -123,10 +124,6 @@ void Generation::nextGeneration() {
   Population next_population;
   next_population.reserve(ConstParam::POPULATION_SIZE + 1);
 
-  for (auto& x : population) {
-    x.calcFitness();
-  }
-
   for (int i = 0; i < ConstParam::POPULATION_SIZE / 2; i++) {
     auto a = selection(this->population);
     auto b = selection(this->population);
@@ -142,12 +139,19 @@ void Generation::nextGeneration() {
   next_population.push_back(getElite());
 
   this->population = next_population;
+  calcFitness();
 }
 
 Individual Generation::getElite() const {
   auto min = [](auto lhs, auto rhs) {
-    return lhs.fitness() > rhs.fitness();
+    return lhs.fitness() < rhs.fitness();
   };
   auto x = std::min_element(std::begin(population), std::end(population), min);
   return *x;
+}
+
+void Generation::calcFitness() {
+  for (auto& x : population) {
+    x.calcFitness();
+  }
 }

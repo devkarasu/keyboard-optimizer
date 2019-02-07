@@ -23,15 +23,31 @@ int main(){
   std::cout << "Hello,World!" << std::endl;
 
   ga::Generation g;
-
+  g.calcFitness();
+  int count = 0;
+  double pre_elite = g.getElite().fitness();
   for (int i = 0; i < ga::ConstParam::GENERATION_MAX; i++) {
     std::cout << i << std::endl;
     g.nextGeneration();
 
-    if (i % 500 == 0)
+    if (i % 100 == 0)
       std::cout << "elite:" << g.getElite().fitness() << std::endl;
+
+    if (g.getElite().fitness() == pre_elite)
+      ++count;
+    else {
+      pre_elite = g.getElite().fitness();
+      count = 0;
+      std::cout << "Change elite" << std::endl;
+    }
+
+    // judge convergence
+    if (count > 500) {
+      break;
+    }
   }
 
+  std::cout << "seed:" << ga::ConstParam::RANDOM_SEED << std::endl;
   printKeys(g.getElite());
   return 0;
 }

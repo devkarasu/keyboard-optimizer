@@ -8,6 +8,7 @@ namespace ga {
     static const int GENERATION_MAX;
     static const double CROSS_RATE;
     static const double MUTATION_RATE;
+    static const long long RANDOM_SEED;
   };
 
   class Individual {
@@ -33,6 +34,7 @@ namespace ga {
   public:
     Generation();
     void nextGeneration();
+    void calcFitness();
     Individual getElite() const;
   };
 }
