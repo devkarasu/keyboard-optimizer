@@ -36,11 +36,14 @@ double Individual::calcFitness() {
   }
 
   char chr;
+
   HAND pre_used_hand = NA;
+  int right_count = 0;
 
   // Scores
   int score_pos = 0;
   int score_left_right = 0;
+  double score_ratio;
 
   // Main Loop
   while (samples.get(chr)) {
@@ -59,10 +62,16 @@ double Individual::calcFitness() {
       ++score_left_right;
       pre_used_hand = hand;
     }
+
+    // Ratio of left and right usage rate
+    if (hand == RIGHT)
+      ++right_count;
   }
 
   score_left_right = 1500 - score_left_right;
 
-  _fitness = 0.5 * (100 / 7000.0 * score_pos) + 0.5 * (100 / 1500.0 * score_left_right);
+  score_ratio = std::abs(right_count / 1500.0 - 0.5) * 200;
+
+  _fitness = 0.5 * (100 / 7000.0 * score_pos) + 0.4 * (100 / 1500.0 * score_left_right) + 0.1 * (score_ratio);
   return _fitness;
 }
