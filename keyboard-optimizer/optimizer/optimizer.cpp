@@ -23,7 +23,6 @@ int main(){
   std::cout << "Hello,World!" << std::endl;
 
   ga::Generation g;
-  g.calcFitness();
   int count = 0;
   double pre_elite = g.getElite().fitness();
   for (int i = 0; i < ga::ConstParam::GENERATION_MAX; i++) {

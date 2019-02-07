@@ -15,6 +15,17 @@ int scores[] = {
     6, 5, 5, 4, 6, 6, 4
 };
 
+enum HAND {
+  LEFT, RIGHT, NA
+};
+
+HAND judgeHand(size_t index) {
+  if (index <= 4 || (10 <= index && index <= 14) || (19 <= index && index <= 23))
+    return LEFT;
+  else
+    return RIGHT;
+}
+
 double Individual::calcFitness() {
   std::ifstream samples("sample.txt");
 
@@ -25,16 +36,33 @@ double Individual::calcFitness() {
   }
 
   char chr;
+  HAND pre_used_hand = NA;
+
+  // Scores
   int score_pos = 0;
+  int score_left_right = 0;
+
+  // Main Loop
   while (samples.get(chr)) {
-    // Scores of key position
+    // tmp variables
     auto i = _layout.find(chr);
+    auto hand = judgeHand(i);
+
+    // Scores of key position
     if (i != std::string::npos)
       score_pos += scores[i];
     else
       std::cout << "???\n";
+
+    // Usage rate of both hands
+    if (pre_used_hand != hand) {
+      ++score_left_right;
+      pre_used_hand = hand;
+    }
   }
 
-  _fitness = 100 / 7000.0 * score_pos;
+  score_left_right = 1500 - score_left_right;
+
+  _fitness = 0.5 * (100 / 7000.0 * score_pos) + 0.5 * (100 / 1500.0 * score_left_right);
   return _fitness;
 }

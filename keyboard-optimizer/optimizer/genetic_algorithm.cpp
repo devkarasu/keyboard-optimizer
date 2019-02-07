@@ -57,6 +57,7 @@ Individual::Individual(const Individual& rhs) : _layout(rhs._layout), _fitness(r
 
 Generation::Generation() {
   population.resize(ConstParam::POPULATION_SIZE + 1);
+  calcFitness();
 }
 
 Individual selection(const Population& x) {
