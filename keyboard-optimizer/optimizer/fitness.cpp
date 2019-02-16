@@ -26,6 +26,18 @@ HAND judgeHand(size_t index) {
     return RIGHT;
 }
 
+int checkColumn(size_t index) {
+  if (0 <= index && index <= 9) {
+    return 3;
+  }
+  else if (10 <= index && index <= 18) {
+    return 2;
+  }
+  else {
+    return 1;
+  }
+}
+
 double Individual::calcFitness() {
   std::ifstream samples("sample.txt");
 
@@ -36,14 +48,17 @@ double Individual::calcFitness() {
   }
 
   char chr;
-
+  
+  size_t pre_index = 16; // 最初は右手人差し指ホームポジションのてい
   HAND pre_used_hand = NA;
   int right_count = 0;
+  int column_movement = 0;
 
   // Scores
   int score_pos = 0;
   int score_left_right = 0;
   double score_ratio;
+  double score_updown;
 
   // Main Loop
   while (samples.get(chr)) {
@@ -66,12 +81,18 @@ double Individual::calcFitness() {
     // Ratio of left and right usage rate
     if (hand == RIGHT)
       ++right_count;
+
+    // UpDown hand??
+    column_movement += std::abs(checkColumn(i) - checkColumn(pre_index));
+
+    pre_index = i;
   }
 
   score_left_right = 1500 - score_left_right;
-
   score_ratio = std::abs(right_count / 1500.0 - 0.5) * 200;
+  score_updown = column_movement / 10000.0;
 
-  _fitness = 0.5 * (100 / 7000.0 * score_pos) + 0.4 * (100 / 1500.0 * score_left_right) + 0.1 * (score_ratio);
+  _fitness = 0.5 * (100 / 7000.0 * score_pos) + 0.4 * (100 / 1500.0 * score_left_right) + 0.1 * (score_ratio) + 0.2 * score_updown;
   return _fitness;
 }
+
