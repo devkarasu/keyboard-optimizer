@@ -81,11 +81,32 @@ const double row_weight[3] = {
 
 double Individual::calcFitness() {
   _fitness = 0;
+  size_t memo[26];
+  for (int i = 0; i < 26; i++) {
+    memo[i] = 30;
+  }
 
   for (auto two_gram : char_pair_frequency) {
     double freq = two_gram.second; // Frequency
-    auto i1 = _layout.find(two_gram.first.first); // index of key1
-    auto i2 = _layout.find(two_gram.first.second); // index of key2
+    size_t i1, i2;
+
+    // index of key1
+    if (memo[two_gram.first.first - 'a'] != 30) {
+      i1 = memo[two_gram.first.first - 'a'];
+    }
+    else {
+      i1 = _layout.find(two_gram.first.first); 
+      memo[two_gram.first.first - 'a'] = i1;
+    }
+
+    // index of key2
+    if (memo[two_gram.first.second - 'a'] != 30) {
+      i2 = memo[two_gram.first.second - 'a'];
+    }
+    else {
+      i2 = _layout.find(two_gram.first.second);
+      memo[two_gram.first.second - 'a'] = i1;
+    }
 
     auto f1 = checkFinger(i1);
     auto f2 = checkFinger(i2);
