@@ -65,7 +65,7 @@ Generation::Generation() {
 }
 
 Individual selection(const Population& x) {
-  static const double fitness_offset = 1500;
+  static const double fitness_offset = 200;
   double roulette_max = std::accumulate(std::begin(x), std::end(x), 0.0,
     [](double lhs, const Population::value_type& rhs) { return lhs + rhs.fitness(); }
   );
@@ -159,4 +159,11 @@ void Generation::calcFitness() {
   for (auto& x : population) {
     x.calcFitness();
   }
+}
+
+void Generation::printFitnesses() const {
+  std::cout << "----------fitness-----------------" << std::endl;
+  for (auto i : population)
+    std::cout << i.fitness() << std::endl;
+  std::cout << "----------------------------------" << std::endl;
 }
