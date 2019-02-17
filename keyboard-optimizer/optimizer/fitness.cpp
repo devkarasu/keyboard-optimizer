@@ -1,6 +1,8 @@
 #include "genetic_algorithm.h"
 #include <fstream>
 #include <iostream>
+#include <unordered_map>
+#include <utility>
 using namespace ga;
 
 /* Layout Indexes
@@ -9,14 +11,59 @@ using namespace ga;
 ** | 19 | 20 | 21 | 22 | 23 | 24 | 25 |
 */
 
-int scores[] = {
-    6, 4, 3, 4, 6, 6, 4, 3, 4, 6,
-    2, 1, 1, 1, 5, 5, 1, 1, 1,
-    6, 5, 5, 4, 6, 6, 4
+using FrequencyDataMap = std::unordered_map<std::pair<char, char>, double>;
+FrequencyDataMap char_pair_frequency;
+
+int loadFrequency() {
+  std::ifstream data("frequency_data.csv");
+  if (!data) {
+    std::cout << "missing data" << std::endl;
+    return 0;
+  }
+
+  char c1, c2;
+  double f;
+  int count = 0;
+
+  while (!data.eof()) {
+    data >> c1 >> c2 >> f;
+    char_pair_frequency[std::make_pair(c1, c2)] = f;
+    count++;
+  }
+
+  return count;
+}
+
+enum HAND { LEFT, RIGHT, NA };
+HAND hand[26]{
+  LEFT, LEFT, LEFT, LEFT, LEFT, RIGHT, RIGHT, RIGHT, RIGHT, RIGHT,
+  LEFT, LEFT, LEFT, LEFT, LEFT, RIGHT, RIGHT, RIGHT, RIGHT,
+  LEFT, LEFT, LEFT, LEFT, LEFT, RIGHT, RIGHT
 };
 
-enum HAND {
-  LEFT, RIGHT, NA
+enum FINGER { THUMB, INDEX, MIDDLE, RING, PINKY, NA };
+FINGER checkFinger(size_t index) {
+  static FINGER finger[] = {
+    PINKY, RING, MIDDLE, INDEX, INDEX, INDEX, INDEX, MIDDLE, RING, PINKY
+  };
+
+  return finger[index % 10];
+}
+std::unordered_map<FINGER, double> finger_weight = {
+  {THUMB, 3},
+  {INDEX, 2},
+  {MIDDLE, 1},
+  {RING, 4.5},
+  {PINKY, 4.5}
+};
+
+int row[26] = {
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 
+  2, 2, 2, 2, 2, 2, 2
+};
+double row_weight[3] = {
+  2.0, 1.0, 3.0
 };
 
 HAND judgeHand(size_t index) {
@@ -47,52 +94,13 @@ double Individual::calcFitness() {
     return _fitness;
   }
 
-  char chr;
-  
-  size_t pre_index = 16; // 最初は右手人差し指ホームポジションのてい
-  HAND pre_used_hand = NA;
-  int right_count = 0;
-  int column_movement = 0;
-
-  // Scores
-  int score_pos = 0;
-  int score_left_right = 0;
-  double score_ratio;
-  double score_updown;
-
   // Main Loop
   while (samples.get(chr)) {
     // tmp variables
     auto i = _layout.find(chr);
     auto hand = judgeHand(i);
-
-    // Scores of key position
-    if (i != std::string::npos)
-      score_pos += scores[i];
-    else
-      std::cout << "???\n";
-
-    // Usage rate of both hands
-    if (pre_used_hand != hand) {
-      ++score_left_right;
-      pre_used_hand = hand;
-    }
-
-    // Ratio of left and right usage rate
-    if (hand == RIGHT)
-      ++right_count;
-
-    // UpDown hand??
-    column_movement += std::abs(checkColumn(i) - checkColumn(pre_index));
-
-    pre_index = i;
   }
 
-  score_left_right = 1500 - score_left_right;
-  score_ratio = std::abs(right_count / 1500.0 - 0.5) * 200;
-  score_updown = column_movement / 10000.0;
-
-  _fitness = 0.5 * (100 / 7000.0 * score_pos) + 0.4 * (100 / 1500.0 * score_left_right) + 0.1 * (score_ratio) + 0.2 * score_updown;
-  return _fitness;
+ return _fitness;
 }
 
