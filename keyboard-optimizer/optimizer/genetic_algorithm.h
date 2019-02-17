@@ -5,7 +5,6 @@
 namespace ga {
   struct ConstParam {
     static const int POPULATION_SIZE;
-    static const int GENERATION_MAX;
     static const double CROSS_RATE;
     static const double MUTATION_RATE;
     static const long long RANDOM_SEED;

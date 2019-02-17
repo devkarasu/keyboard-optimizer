@@ -7,7 +7,6 @@
 using namespace ga;
 
 const int ConstParam::POPULATION_SIZE = 100;
-const int ConstParam::GENERATION_MAX = 100000;
 const double ConstParam::CROSS_RATE = 95;
 const double ConstParam::MUTATION_RATE = 0.5;
 

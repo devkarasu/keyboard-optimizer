@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Resource files
+frequency_data.txt
+*.csv
+
 # User-specific files
 *.suo
 *.user
