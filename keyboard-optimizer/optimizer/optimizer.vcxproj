@@ -168,7 +168,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="frequency_data.txt" />
-    <Text Include="sample.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
