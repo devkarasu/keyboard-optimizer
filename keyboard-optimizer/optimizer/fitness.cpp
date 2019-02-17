@@ -35,6 +35,9 @@ int ga::loadFrequency() {
   std::cout << "---------------data------------------\n";
   while (!data.eof()) {
     data >> c1 >> c2 >> f;
+    if (f < 1.0e-8)
+      continue;
+
     std::cout << c1 << " " << c2 << " " << f << std::endl;
     char_pair_frequency[std::make_pair(c1, c2)] = f;
     count++;
