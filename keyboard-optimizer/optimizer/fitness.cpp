@@ -11,11 +11,18 @@ using namespace ga;
 ** | 19 | 20 | 21 | 22 | 23 | 24 | 25 |
 */
 
-using FrequencyDataMap = std::unordered_map<std::pair<char, char>, double>;
+struct pair_hash {
+  template <class T1, class T2>
+  std::size_t operator() (const std::pair<T1, T2> &pair) const {
+    return std::hash<T1>()(pair.first) ^ std::hash<T2>()(pair.second);
+  }
+};
+
+using FrequencyDataMap = std::unordered_map<std::pair<char, char>, double, pair_hash>;
 FrequencyDataMap char_pair_frequency;
 
-int loadFrequency() {
-  std::ifstream data("frequency_data.csv");
+int ga::loadFrequency() {
+  std::ifstream data("frequency_data.txt");
   if (!data) {
     std::cout << "missing data" << std::endl;
     return 0;
@@ -25,23 +32,26 @@ int loadFrequency() {
   double f;
   int count = 0;
 
+  std::cout << "---------------data------------------\n";
   while (!data.eof()) {
     data >> c1 >> c2 >> f;
+    std::cout << c1 << " " << c2 << " " << f << std::endl;
     char_pair_frequency[std::make_pair(c1, c2)] = f;
     count++;
   }
+  std::cout << "-------------------------------------\n";
 
   return count;
 }
 
-enum HAND { LEFT, RIGHT, NA };
+enum HAND { LEFT, RIGHT };
 const HAND hand[26]{
   LEFT, LEFT, LEFT, LEFT, LEFT, RIGHT, RIGHT, RIGHT, RIGHT, RIGHT,
   LEFT, LEFT, LEFT, LEFT, LEFT, RIGHT, RIGHT, RIGHT, RIGHT,
   LEFT, LEFT, LEFT, LEFT, LEFT, RIGHT, RIGHT
 };
 
-enum FINGER { THUMB, INDEX, MIDDLE, RING, PINKY, NA };
+enum FINGER { THUMB, INDEX, MIDDLE, RING, PINKY };
 FINGER checkFinger(size_t index) {
   static FINGER finger[] = {
     PINKY, RING, MIDDLE, INDEX, INDEX, INDEX, INDEX, MIDDLE, RING, PINKY
@@ -71,17 +81,17 @@ double Individual::calcFitness() {
 
   for (auto two_gram : char_pair_frequency) {
     double freq = two_gram.second; // Frequency
-    auto i1 = _layout.find(two_gram.first.first); // character1 of pair
-    auto i2 = _layout.find(two_gram.first.second); // character2 of pair
+    auto i1 = _layout.find(two_gram.first.first); // index of key1
+    auto i2 = _layout.find(two_gram.first.second); // index of key2
 
     auto f1 = checkFinger(i1);
     auto f2 = checkFinger(i2);
 
-    double h = std::abs(hand[i1] - hand[i2]);
-    double r = std::abs(row[i1] - hand[i2]);
-    double f = h == 0 ? 0 : std::abs(f1 - f2);
-    double R = row_weight[row[i1]] + row_weight[row[i2]];
-    double F = finger_weight[f1] + finger_weight[f2];
+    double h = std::abs(hand[i1] - hand[i2]); // Hand Transition
+    double r = h == 0 ? std::abs(row[i1] - row[i2]) : 0; // Row Transition
+    double f = h == 0 ? std::abs(f1 - f2) : 0; // Finger Transition
+    double R = row_weight[row[i1]] + row_weight[row[i2]]; // Row Weight
+    double F = finger_weight[f1] + finger_weight[f2]; // Finger Weight
 
     _fitness += (185.8 - 40.0*h + 18.3*r - 11.0*f + 0.514*R + 1.07*F) * freq;
   }

@@ -37,4 +37,6 @@ namespace ga {
     void calcFitness();
     Individual getElite() const;
   };
+
+  int loadFrequency();
 }

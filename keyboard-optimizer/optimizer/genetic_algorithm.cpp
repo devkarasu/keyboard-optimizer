@@ -62,14 +62,14 @@ Generation::Generation() {
 
 Individual selection(const Population& x) {
   double roulette_max = std::accumulate(std::begin(x), std::end(x), 0.0,
-    [](double lhs, const Population::value_type& rhs) { return lhs + 120 - rhs.fitness(); }
+    [](double lhs, const Population::value_type& rhs) { return lhs + 450 - rhs.fitness(); }
   );
 
   double dart = roulette(roulette_max);
   double sum = 0.0;
   int i;
   for (i = 0; dart > sum && i < x.size(); i++) {
-    sum = 120 - x[i].fitness() + sum;
+    sum = 450 - x[i].fitness() + sum;
   }
 
   return x[i - 1];

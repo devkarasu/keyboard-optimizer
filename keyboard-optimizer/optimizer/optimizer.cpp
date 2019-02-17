@@ -22,6 +22,9 @@ void printKeys(const ga::Individual& x) {
 int main(){
   std::cout << "Hello,World!" << std::endl;
 
+  // Load 2-Gram data
+  ga::loadFrequency();
+
   ga::Generation g;
   int count = 0;
   double pre_elite = g.getElite().fitness();
