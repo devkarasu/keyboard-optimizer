@@ -40,3 +40,4 @@ namespace ga {
 
   int loadFrequency();
 }
+

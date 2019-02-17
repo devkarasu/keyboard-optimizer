@@ -19,6 +19,10 @@ const int LEN = 25;
 std::mt19937_64 mt(ConstParam::RANDOM_SEED);
 std::uniform_real_distribution<> rdist(0.0, 1.0);
 
+const auto compareIndividual = [](auto lhs, auto rhs) {
+  return lhs.fitness() < rhs.fitness();
+};
+
 double percentage() {
   return rdist(mt) * 100.0;
 }
@@ -61,15 +65,18 @@ Generation::Generation() {
 }
 
 Individual selection(const Population& x) {
+  static const double fitness_offset = 450;
   double roulette_max = std::accumulate(std::begin(x), std::end(x), 0.0,
-    [](double lhs, const Population::value_type& rhs) { return lhs + 450 - rhs.fitness(); }
+    [](double lhs, const Population::value_type& rhs) { return lhs + rhs.fitness(); }
   );
+
+  roulette_max = fitness_offset * x.size() - roulette_max;
 
   double dart = roulette(roulette_max);
   double sum = 0.0;
   int i;
   for (i = 0; dart > sum && i < x.size(); i++) {
-    sum = 450 - x[i].fitness() + sum;
+    sum = fitness_offset - x[i].fitness() + sum;
   }
 
   return x[i - 1];
@@ -144,10 +151,7 @@ void Generation::nextGeneration() {
 }
 
 Individual Generation::getElite() const {
-  auto min = [](auto lhs, auto rhs) {
-    return lhs.fitness() < rhs.fitness();
-  };
-  auto x = std::min_element(std::begin(population), std::end(population), min);
+  auto x = std::min_element(std::begin(population), std::end(population), compareIndividual);
   return *x;
 }
 
