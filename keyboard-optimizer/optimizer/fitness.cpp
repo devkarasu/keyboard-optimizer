@@ -35,7 +35,7 @@ int loadFrequency() {
 }
 
 enum HAND { LEFT, RIGHT, NA };
-HAND hand[26]{
+const HAND hand[26]{
   LEFT, LEFT, LEFT, LEFT, LEFT, RIGHT, RIGHT, RIGHT, RIGHT, RIGHT,
   LEFT, LEFT, LEFT, LEFT, LEFT, RIGHT, RIGHT, RIGHT, RIGHT,
   LEFT, LEFT, LEFT, LEFT, LEFT, RIGHT, RIGHT
@@ -57,50 +57,35 @@ std::unordered_map<FINGER, double> finger_weight = {
   {PINKY, 4.5}
 };
 
-int row[26] = {
+const int row[26] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   1, 1, 1, 1, 1, 1, 1, 1, 1, 
   2, 2, 2, 2, 2, 2, 2
 };
-double row_weight[3] = {
+const double row_weight[3] = {
   2.0, 1.0, 3.0
 };
 
-HAND judgeHand(size_t index) {
-  if (index <= 4 || (10 <= index && index <= 14) || (19 <= index && index <= 23))
-    return LEFT;
-  else
-    return RIGHT;
-}
-
-int checkColumn(size_t index) {
-  if (0 <= index && index <= 9) {
-    return 3;
-  }
-  else if (10 <= index && index <= 18) {
-    return 2;
-  }
-  else {
-    return 1;
-  }
-}
-
 double Individual::calcFitness() {
-  std::ifstream samples("sample.txt");
+  _fitness = 0;
 
-  if (!samples) {
-    std::cout << "i can't read sample texts\n";
-    _fitness = 777;
-    return _fitness;
+  for (auto two_gram : char_pair_frequency) {
+    double freq = two_gram.second; // Frequency
+    auto i1 = _layout.find(two_gram.first.first); // character1 of pair
+    auto i2 = _layout.find(two_gram.first.second); // character2 of pair
+
+    auto f1 = checkFinger(i1);
+    auto f2 = checkFinger(i2);
+
+    double h = std::abs(hand[i1] - hand[i2]);
+    double r = std::abs(row[i1] - hand[i2]);
+    double f = h == 0 ? 0 : std::abs(f1 - f2);
+    double R = row_weight[row[i1]] + row_weight[row[i2]];
+    double F = finger_weight[f1] + finger_weight[f2];
+
+    _fitness += (185.8 - 40.0*h + 18.3*r - 11.0*f + 0.514*R + 1.07*F) * freq;
   }
 
-  // Main Loop
-  while (samples.get(chr)) {
-    // tmp variables
-    auto i = _layout.find(chr);
-    auto hand = judgeHand(i);
-  }
-
- return _fitness;
+  return _fitness;
 }
 
