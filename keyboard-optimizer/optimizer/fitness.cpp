@@ -62,13 +62,8 @@ FINGER checkFinger(size_t index) {
 
   return finger[index % 10];
 }
-std::unordered_map<FINGER, double> finger_weight = {
-  {THUMB, 3},
-  {INDEX, 2},
-  {MIDDLE, 1},
-  {RING, 4.5},
-  {PINKY, 4.5}
-};
+
+double finger_weight[] = { 3, 2, 1, 4.5, 4.5 };
 
 const int row[26] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -82,8 +77,9 @@ const double row_weight[3] = {
 double Individual::calcFitness() {
   _fitness = 0;
   size_t memo[26];
-  for (int i = 0; i < 26; i++) {
-    memo[i] = 30;
+  int i = 0;
+  for (auto c : _layout) {
+    memo[c - 'a'] = i++;
   }
 
   for (auto two_gram : char_pair_frequency) {
@@ -91,22 +87,10 @@ double Individual::calcFitness() {
     size_t i1, i2;
 
     // index of key1
-    if (memo[two_gram.first.first - 'a'] != 30) {
-      i1 = memo[two_gram.first.first - 'a'];
-    }
-    else {
-      i1 = _layout.find(two_gram.first.first); 
-      memo[two_gram.first.first - 'a'] = i1;
-    }
+    i1 = memo[two_gram.first.first - 'a'];
 
     // index of key2
-    if (memo[two_gram.first.second - 'a'] != 30) {
-      i2 = memo[two_gram.first.second - 'a'];
-    }
-    else {
-      i2 = _layout.find(two_gram.first.second);
-      memo[two_gram.first.second - 'a'] = i1;
-    }
+    i2 = memo[two_gram.first.second - 'a'];
 
     auto f1 = checkFinger(i1);
     auto f2 = checkFinger(i2);
@@ -116,7 +100,6 @@ double Individual::calcFitness() {
     double f = h == 0 ? std::abs(f1 - f2) : 0; // Finger Transition
     double R = row_weight[row[i1]] + row_weight[row[i2]]; // Row Weight
     double F = finger_weight[f1] + finger_weight[f2]; // Finger Weight
-
     _fitness += (185.8 - 40.0*h + 18.3*r - 11.0*f + 0.514*R + 1.07*F) * freq;
   }
 
