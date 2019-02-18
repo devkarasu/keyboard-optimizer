@@ -3,20 +3,20 @@
 #include <fstream>
 #include "genetic_algorithm.h"
 
-void printKeys(const ga::Individual& x) {
-  std::cout << "fitness:" << x.fitness() << std::endl;
+void printKeys(const ga::Individual& x, std::ostream& out) {
+  out << "fitness:" << x.fitness() << std::endl;
 
   std::istringstream s(x.layout());
 
-  std::cout << "| ";
+  out << "| ";
   for (int i = 0; i < 10; i++) 
-    std::cout << (char)s.get() << " | ";
-  std::cout << "\n| ";
+    out << (char)s.get() << " | ";
+  out << "\n | ";
   for (int i = 0; i < 9; i++) 
-    std::cout << (char)s.get() << " | ";
-  std::cout << "\n| ";
+    out << (char)s.get() << " | ";
+  out << "\n  | ";
   for(int i = 0; i < 7; i++)
-    std::cout << (char)s.get() << " | ";
+    out << (char)s.get() << " | ";
   return;
 }
 
@@ -30,30 +30,39 @@ int main(){
   ga::Generation g;
   g.printFitnesses();
 
+  std::ofstream result_text("final_layout.txt");
+  result_text << "seed:" << ga::ConstParam::RANDOM_SEED << std::endl;
+
   std::ofstream result("result.csv");
 
   int count = 0;
-  double pre_elite = g.getElite().fitness();
-  for (int i = 0;; i++) {
+  auto elite = g.getElite();
+  double pre_elite = elite.fitness();
+  result << -1 << "," << elite.fitness() << "," << elite.layout() << std::endl;
+  for (unsigned long long i = 0;; i++) {
     std::cout << i << std::endl;
     g.nextGeneration();
 
-    if (i % 200 == 0) {
-      auto elite = g.getElite();
-      result << i << "," << elite.fitness() << "," << elite.layout() << std::endl;
+    if (i % 500 == 0) {
+      elite = g.getElite();
       std::cout << "elite:" << elite.fitness() << std::endl;
     }
 
-    if (g.getElite().fitness() == pre_elite)
+    elite = g.getElite();
+    if (elite.fitness() == pre_elite)
       ++count;
     else {
-      pre_elite = g.getElite().fitness();
+      pre_elite = elite.fitness();
       count = 0;
       std::cout << "Change elite" << std::endl;
+      result << i << "," << elite.fitness() << "," << elite.layout() << std::endl;
+    }
+
+    if (count > 300000) {
+      printKeys(elite, result_text);
+      break;
     }
   }
 
-  std::cout << "seed:" << ga::ConstParam::RANDOM_SEED << std::endl;
-  printKeys(g.getElite());
   return 0;
 }
