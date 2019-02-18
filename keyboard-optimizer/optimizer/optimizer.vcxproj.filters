@@ -31,7 +31,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="sample.txt">
+    <Text Include="frequency_data.txt">
       <Filter>リソース ファイル</Filter>
     </Text>
   </ItemGroup>

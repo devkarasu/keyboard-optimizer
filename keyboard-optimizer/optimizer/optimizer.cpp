@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include "genetic_algorithm.h"
 
 void printKeys(const ga::Individual& x) {
@@ -19,18 +20,29 @@ void printKeys(const ga::Individual& x) {
   return;
 }
 
+
 int main(){
   std::cout << "Hello,World!" << std::endl;
 
+  // Load 2-Gram data
+  ga::loadFrequency();
+
   ga::Generation g;
+  g.printFitnesses();
+
+  std::ofstream result("result.csv");
+
   int count = 0;
   double pre_elite = g.getElite().fitness();
-  for (int i = 0; i < ga::ConstParam::GENERATION_MAX; i++) {
+  for (int i = 0;; i++) {
     std::cout << i << std::endl;
     g.nextGeneration();
 
-    if (i % 100 == 0)
-      std::cout << "elite:" << g.getElite().fitness() << std::endl;
+    if (i % 200 == 0) {
+      auto elite = g.getElite();
+      result << i << "," << elite.fitness() << "," << elite.layout() << std::endl;
+      std::cout << "elite:" << elite.fitness() << std::endl;
+    }
 
     if (g.getElite().fitness() == pre_elite)
       ++count;
@@ -38,11 +50,6 @@ int main(){
       pre_elite = g.getElite().fitness();
       count = 0;
       std::cout << "Change elite" << std::endl;
-    }
-
-    // judge convergence
-    if (count > 500) {
-      break;
     }
   }
 
