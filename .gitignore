@@ -5,6 +5,7 @@
 
 # Resource files
 frequency_data.txt
+final_layout.txt
 *.csv
 
 # User-specific files
