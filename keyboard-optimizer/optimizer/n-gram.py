@@ -1,5 +1,16 @@
 import sys
 import re
+import os
+
+files = os.listdir()
+file_dir = [f for f in files if os.path.isdir(os.path.join(".", f))]
+
+files = []
+for d in file_dir:
+  target = os.path.join(".", d)
+  filelist = os.listdir(target)
+  for f in filelist:
+    files.append(os.path.join(target, f))
 
 chrlist = [chr(i) for i in range(97, 97+26)]
 ngram = {}
@@ -12,7 +23,7 @@ filename_pattern = re.compile(pattern)
 pattern = r"[a-z]{2}"
 chr_pattern = re.compile(pattern)
 
-for filename in sys.argv:
+for filename in files:
   if filename_pattern.search(filename) == None:
     print("Invalid file:%s" % (filename))
     continue
