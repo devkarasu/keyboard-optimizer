@@ -54,13 +54,18 @@ const HAND hand[26]{
   LEFT, LEFT, LEFT, LEFT, LEFT, RIGHT, RIGHT
 };
 
-enum FINGER { THUMB, INDEX, MIDDLE, RING, PINKY };
+enum FINGER { INDEX1, INDEX2, MIDDLE, RING, PINKY };
 FINGER checkFinger(size_t index) {
   static FINGER finger[] = {
-    PINKY, RING, MIDDLE, INDEX, INDEX, INDEX, INDEX, MIDDLE, RING, PINKY
+    PINKY, RING, MIDDLE, INDEX2, INDEX1, INDEX1, INDEX2, MIDDLE, RING, PINKY
   };
 
-  return finger[index % 10];
+  if (index < 10)
+	  return finger[index];
+  else if (index < 19)
+	  return finger[index - 10];
+  else
+	  return finger[index - 19];
 }
 
 double finger_weight[] = { 3, 2, 1, 4.5, 4.5 };

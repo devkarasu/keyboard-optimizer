@@ -40,12 +40,11 @@ int main(){
   double pre_elite = elite.fitness();
   result << -1 << "," << elite.fitness() << "," << elite.layout() << std::endl;
   for (unsigned long long i = 0;; i++) {
-    std::cout << i << std::endl;
     g.nextGeneration();
 
     if (i % 500 == 0) {
       elite = g.getElite();
-      std::cout << "elite:" << elite.fitness() << std::endl;
+      std::cout << i << " elite:" << elite.fitness() << std::endl;
     }
 
     elite = g.getElite();
@@ -58,7 +57,7 @@ int main(){
       result << i << "," << elite.fitness() << "," << elite.layout() << std::endl;
     }
 
-    if (count > 300000) {
+    if (count > 100000) {
       printKeys(elite, result_text);
       break;
     }
